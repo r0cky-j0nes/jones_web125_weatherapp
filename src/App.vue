@@ -45,6 +45,12 @@
         </div>
 
       </div>
+      <nav>
+        <li><router-link to="/">Home</router-link></li>
+        <li><router-link to="/hourly">Hourly</router-link></li>
+        <li><router-link to="/forecast">5 Day Forecast</router-link></li>
+        
+      </nav>
 
 
 
@@ -73,6 +79,7 @@ export default {
         .then(res => {
           return res.json();
         }).then(this.setResults);
+        
       }
     },
     getWeather(city) {
@@ -262,10 +269,10 @@ main{
 }
 
 .weather-icon{
-  ccolor: #FFF;
+  color: #FFF;
   font-size: 25px;
   font-weight: 700;
-  fony-style: italic;
+  font-style: italic;
   text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
   font-family: "Delius Unicase", cursive;
   padding: 5px;
@@ -321,5 +328,42 @@ main{
   cursor: pointer;
   font-family: "Delius Unicase", cursive;
 }
+
+nav{
+  text-align:center;
+}
+
+nav li{
+  display: inline-block;
+  align-items: center;
+  text-align:center;
+  gap: 15px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 15px;
+  color: #FFF;
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
+  font-family: "Delius Unicase", cursive;
+  padding: 15px;
+  margin: 10px;
+}
+
+
+nav a {
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  text-align: center;
+  transition: background 0.3s ease-in-out;
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 
 </style>
