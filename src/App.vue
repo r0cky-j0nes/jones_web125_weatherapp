@@ -24,7 +24,7 @@
 
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
         <div class="location-box">
-          <div class="location">{{ weatherLocation }}</div>
+          <div class="location">{{ weather.name }}, {{  weather.sys.country }}</div>
           <button @click="saveLocation" class="save-btn">Save This Location</button>
           <div class="date">{{ dateBulider() }}</div>
           
@@ -67,22 +67,14 @@ export default {
     }
   },
   methods:{
-    fetchWeather(e) {
-  if (e.key === "Enter") {
-    fetch(`${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`)
-      .then((res) => res.json())
-      .then((data) => {
-        this.weather = data;
-        this.query = '';
-        if (data.sys) {
-          this.weatherLocation = `${data.name}, ${data.sys.state}, ${data.sys.country}`;
-        } else {
-          this.weatherLocation = `${data.name}, ${data.sys.country}`;
-        }
-      });
-  }
-},
-
+    fetchWeather(e){
+      if (e.key == "Enter") {
+        fetch(`${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`)
+        .then(res => {
+          return res.json();
+        }).then(this.setResults);
+      }
+    },
     getWeather(city) {
     fetch(`${this.url_base}weather?q=${city}&units=imperial&APPID=${this.api_key}`)
       .then(res => res.json())
