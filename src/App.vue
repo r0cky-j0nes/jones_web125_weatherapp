@@ -24,7 +24,7 @@
 
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
         <div class="location-box">
-          <div class="location">{{ weather.name }}, {{  weather.sys.country }}, {{ weather.state }}</div>
+          <div class="location">{{ weather.name }}, {{  weather.sys.country }}</div>
           <button @click="saveLocation" class="save-btn">Save This Location</button>
           <div class="date">{{ dateBulider() }}</div>
           
