@@ -24,7 +24,7 @@
 
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
         <div class="location-box">
-          <div class="location">{{ weather.name }}, {{  weather.sys.country }}</div>
+          <div class="location">{{ weatherLocation }}</div>
           <button @click="saveLocation" class="save-btn">Save This Location</button>
           <div class="date">{{ dateBulider() }}</div>
           
@@ -73,6 +73,11 @@ export default {
         .then(res => {
           return res.json();
         }).then(this.setResults);
+        if (data.sys) {
+          this.weatherLocation = `${data.name}, ${data.sys.state}, ${data.sys.country}`;
+        } else {
+          this.weatherLocation = `${data.name}, ${data.sys.country}`;
+        }
       }
     },
     getWeather(city) {
