@@ -67,19 +67,22 @@ export default {
     }
   },
   methods:{
-    fetchWeather(e){
-      if (e.key == "Enter") {
-        fetch(`${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`)
-        .then(res => {
-          return res.json();
-        }).then(this.setResults);
+    fetchWeather(e) {
+  if (e.key === "Enter") {
+    fetch(`${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`)
+      .then((res) => res.json())
+      .then((data) => {
+        this.weather = data;
+        this.query = '';
         if (data.sys) {
           this.weatherLocation = `${data.name}, ${data.sys.state}, ${data.sys.country}`;
         } else {
           this.weatherLocation = `${data.name}, ${data.sys.country}`;
         }
-      }
-    },
+      });
+  }
+},
+
     getWeather(city) {
     fetch(`${this.url_base}weather?q=${city}&units=imperial&APPID=${this.api_key}`)
       .then(res => res.json())
