@@ -1,17 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import weatherHome from '../views/weatherHome.vue';
-import hourlyWeather from '../views/hourlyWeather.vue';
-import weatherForecast from '../views/weatherForecast.vue';
+import HourlyForecast from '../views/HourlyForecast.vue';
+import FiveDayForecast from '../views/FiveDayForecast.vue';
+import weatherHome from '../views/weatherHome.vue'
 
 const routes = [
-    { path: '/', name: 'Home', component: weatherHome },
-    { path: '/hourly', name: 'WeatherHourly', component: hourlyWeather },
-    { path: '/forecast', name: 'WeatherForecast', component: weatherForecast }
-  ];
+  { path: '/hourly', name: 'HourlyForecast', component: HourlyForecast },
+  { path: '/5day', name: 'FiveDayForecast', component: FiveDayForecast },
+  { path: '/', name: 'weatherHome', component: weatherHome}
+];
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+  history: createWebHistory(process.env.BASE_URL),
+  routes,
 });
 
 export default router;

@@ -1,60 +1,12 @@
 <template>
-  <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp < 63 ?
-  'cold' : ''">
-    <main>
-      <div class="search-box">
-        <input 
-        type="text" 
-        class="search-bar" 
-        placeholder="Enter City..."
-        v-model="query"
-        @keypress="fetchWeather"
-        >
-      </div>
-
-      <div class="saved-locations" v-if="savedLocations.length">
-        <h3>Saved Locations:</h3>
-        <ul>
-          <li v-for="(city, index) in savedLocations" :key="index">
-            <button @click="selectSavedLocation(city)">{{ city }}</button>
-            <button @click="deleteLocation(index)" class="delete-btn">✖</button>
-          </li>
-        </ul>
-      </div>
-
-      <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
-        <div class="location-box">
-          <div class="location">{{ weather.name }}, {{  weather.sys.country }}</div>
-          <button @click="saveLocation" class="save-btn">Save This Location</button>
-          <div class="date">{{ dateBulider() }}</div>
-          
-        </div>
-
-        <div class="temp-range">
-          High: {{ Math.round(weather.main.temp_max) }}°F / 
-          Low: {{ Math.round(weather.main.temp_min) }}°F
-        </div>
-
-        <div class="weather-box">
-          <div class="temp"> {{ Math.round(weather.main.temp) }}°F </div>
-          <div class="weather-icon"> 
-            <img :src="`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`" 
-            :alt="weather.weather[0].description" /></div>
-          <div class="weather"> {{  weather.weather[0].main }} </div>
-          
-        </div>
-
-      </div>
+  <div id="app">
       <nav>
         <li><router-link to="/">Home</router-link></li>
         <li><router-link to="/hourly">Hourly</router-link></li>
-        <li><router-link to="/forecast">5 Day Forecast</router-link></li>
+        <li><router-link to="/5day">5 Day Forecast</router-link></li>
         
       </nav>
-
-
-
-    </main>
+    <router-view/>
   </div>
 </template>
 
@@ -150,7 +102,7 @@ export default {
 *{
   margin:0;
   padding: 0;
-  box-sixing: border-box;
+  box-sizing: border-box;
 }
 
 body{ 
@@ -158,18 +110,18 @@ body{
 }
 
 #app{
-  background-image: url('@/assets/index.jpg');
+  background-image: url(assets/index.jpg);
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
 }
 
 #app.hot{
-  background-image: url('@/assets/hot-bg.jpg');
+  background-image: url(assets/hot-bg.jpg);
 }
 
 #app.cold{
-  background-image: url('@/assets/cold-bg.jpg');
+  background-image: url('assets/cold-bg.jpg');
 }
 
 main{
