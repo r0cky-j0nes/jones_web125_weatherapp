@@ -1,84 +1,24 @@
 <template>
   <div id="app">
-      <nav>
-        <li><router-link to="/">Home</router-link></li>
-        <li><router-link to="/hourly">Hourly</router-link></li>
-        <li><router-link to="/5day">5 Day Forecast</router-link></li>
-        
-      </nav>
+       <!-- Always visible search & saved list -->
+      
+
+      <!-- Below that, whichever view is active -->
+      
+      
+    <SearchBar />
     <router-view/>
+    
+    
   </div>
 </template>
 
 <script>
+import SearchBar from '@/views/SearchBar.vue'
 
 export default {
   name: 'App',
-  data () {
-    return {
-      api_key: '2f6532bf0e107efc40b25b23913398f7',
-      url_base: 'https://api.openweathermap.org/data/2.5/',
-      query: '',
-      weather: {},
-      savedLocations: []
-      
-    }
-  },
-  methods:{
-    fetchWeather(e){
-      if (e.key == "Enter") {
-        fetch(`${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`)
-        .then(res => {
-          return res.json();
-        }).then(this.setResults);
-        
-      }
-    },
-    getWeather(city) {
-    fetch(`${this.url_base}weather?q=${city}&units=imperial&APPID=${this.api_key}`)
-      .then(res => res.json())
-      .then(this.setResults);
-    },
-    setResults (results){
-      this.weather = results;
-      this.query = '';
-      if (results.weather && results.weather.length > 0) {
-        this.weatherType = results.weather[0].main;
-      }
-    },
-    saveLocation() {
-      const city = this.weather.name;
-      if (city && !this.savedLocations.includes(city)) {
-        this.savedLocations.push(city);
-      }
-    },
-    selectSavedLocation(city) {
-      this.getWeather(city);
-    },
-    deleteLocation(index) {
-      this.savedLocations.splice(index, 1);
-    },
-
-    dateBulider (){
-      let d = new Date();
-      let days = ["Sunday", "Monday", "Tuesday", 
-                  "Wednesday", "Thursday", "Friday", 
-                  "Saturday"];
-      let months = ["January", "February", "March", 
-                    "April", "May", "June", 
-                    "July", "August", "September", 
-                    "October", "November", "December"];
-      
-      let day = days[d.getDay()];
-      let date = d.getDate();
-      let month = months[d.getMonth()];
-      let year = d.getFullYear();
-      return `${day} ${month} ${date}, ${year}`;
-    }
-
-
-
-  }
+  components: { SearchBar }
 }
 </script>
 

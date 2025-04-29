@@ -1,50 +1,85 @@
 <template>
   <div class="chart-container">
-    <h2>Hourly Forecast</h2>
-    <Line v-if="chartData.labels.length" :data="chartData" :options="chartOptions" />
-    <p v-else>Loading hourly data...</p>
+    <h2>Hourly Forecast for {{ city }}</h2>
+    <p v-if="error" class="err">{{ error }}</p>
+    <Line
+      v-else-if="chartData.labels.length"
+      :data="chartData"
+      :options="chartOptions"
+    />
+    <p v-else>Loading hourly data…</p>
   </div>
 </template>
 
 <script setup>
-import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale } from 'chart.js';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
+import { Line }          from 'vue-chartjs'
+import {
+  Chart as C,
+  Title, Tooltip, Legend,
+  LineElement, PointElement,
+  CategoryScale, LinearScale
+} from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale);
+C.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale)
 
-const apiKey = '2f6532bf0e107efc40b25b23913398f7';
-const chartData = ref({
-  labels: [],
-  datasets: [
-    { label: 'Temperature (°F)', data: [], borderColor: 'rgba(75, 192, 192, 1)', tension: 0.4 },
-    { label: 'Rain (mm)', data: [], borderColor: 'rgba(54, 162, 235, 0.6)', backgroundColor: 'rgba(54, 162, 235, 0.2)', tension: 0.4 }
-  ]
-});
-const chartOptions = { responsive: true, maintainAspectRatio: false };
+import { useRoute } from 'vue-router'
+const route      = useRoute()
+const city       = route.query.city || ''
+const apiKey     = '2f6532bf0e107efc40b25b23913398f7'
 
-async function fetchHourlyForecast() {
-  const city = localStorage.getItem('lastCity') || 'New York';
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`);
-  const data = await res.json();
-  if (data.list) {
-    const today = data.list.slice(0, 8); // Next 8 time blocks (~24h)
+const chartData    = ref({ labels: [], datasets: [] })
+const chartOptions = { responsive: true, maintainAspectRatio: false }
+const error        = ref('')
 
-    chartData.value.labels = today.map(item => item.dt_txt.split(' ')[1].slice(0, 5)); // HH:MM
-    chartData.value.datasets[0].data = today.map(item => item.main.temp);
-    chartData.value.datasets[1].data = today.map(item => item.rain ? item.rain['3h'] || 0 : 0);
+onMounted(async () => {
+  if (!city) {
+    error.value = 'No city specified.'
+    return
   }
-}
+  try {
+    const url  = `https://api.openweathermap.org/data/2.5/forecast` +
+                 `?q=${encodeURIComponent(city)}` +
+                 `&units=imperial&appid=${apiKey}`
+    const res  = await fetch(url)
+    const data = await res.json()
+    if (data.cod !== '200' || !Array.isArray(data.list)) {
+      throw new Error(data.message || 'Invalid forecast data.')
+    }
 
-onMounted(() => {
-  fetchHourlyForecast();
-});
+    const slice8 = data.list.slice(0, 8)
+    chartData.value = {
+      labels: slice8.map(item =>
+        new Date(item.dt_txt).toLocaleTimeString('en-US',{
+          hour:'numeric', minute:'2-digit', hour12:true
+        })
+      ),
+      datasets: [
+        {
+          label: 'Temperature (°F)',
+          data: slice8.map(i => i.main.temp),
+          borderColor: 'rgba(75,192,192,1)',
+          tension: 0.4
+        },
+        {
+          label: 'Rain (mm)',
+          data: slice8.map(i => i.rain?.['3h'] || 0),
+          backgroundColor: 'rgba(54,162,235,0.2)',
+          borderColor: 'rgba(54,162,235,0.6)',
+          tension: 0.4
+        }
+      ]
+    }
+  } catch (e) {
+    error.value = e.message
+  }
+})
 </script>
 
 <style scoped>
 .chart-container {
-  width: 90%;
-  height: 500px;
-  margin: auto;
+  width: 90%; max-width: 700px; height: 400px;
+  margin: 2rem auto; text-align: center;
 }
+.err { color: red; margin-bottom:1rem; }
 </style>
