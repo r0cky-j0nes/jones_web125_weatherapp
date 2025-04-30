@@ -12,54 +12,65 @@
   
       <!-- Saved locations -->
       <div class="saved-locations" v-if="saved.length">
-        <h3>Saved Locations:</h3>
-        <ul>
-          <li v-for="(city, i) in saved" :key="i">
-            <button @click="goToCity(city)">{{ city }}</button>
-            <button @click="remove(i)" class="delete-btn">✖</button>
-          </li>
-        </ul>
-      </div>
+  <h3>Saved Locations:</h3>
+  <ul>
+    <li v-for="(city, i) in saved" :key="i">
+      <button @click="goToCity(city)">{{ city }}</button>
+      <button @click="remove(city)" class="delete-btn">✖</button>
+    </li>
+  </ul>
+</div>
     </div>
   </template>
   
   <script setup>
-  import { ref } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
-  
-  // reactive state
-  const query = ref('')
-  const saved = ref(JSON.parse(localStorage.getItem('saved') || '[]'))
-  
-  const router = useRouter()
-  const route  = useRoute()
-  
-  // 1) When user presses Enter
-  function onSearch() {
-    if (!query.value.trim()) return
-    // Navigate to the current route with new ?city=
-    router.push({
-      name: route.name,
-      query: { city: query.value.trim() }
-    })
-    // Optionally add to saved?
-    // saved.value.push(query.value.trim())
-    // localStorage.setItem('saved', JSON.stringify(saved.value))
-  
-    query.value = ''
-  }
-  
-  // 2) Click on a saved location
-  function goToCity(city) {
-    router.push({ name: route.name, query: { city } })
-  }
-  
-  // 3) Manually remove a saved location
-  function remove(i) {
-    saved.value.splice(i, 1)
-    localStorage.setItem('saved', JSON.stringify(saved.value))
-  }
-  </script>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+// reactive state
+const query   = ref('')
+const saved   = ref(JSON.parse(localStorage.getItem('saved') || '[]'))
+
+const router  = useRouter()
+const route   = useRoute()
+
+// reload helper
+function loadSaved() {
+  saved.value = JSON.parse(localStorage.getItem('saved') || '[]')
+}
+
+// listen for our custom event
+onMounted(() => {
+  window.addEventListener('saved-updated', loadSaved)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('saved-updated', loadSaved)
+})
+
+// 1) Search on Enter
+function onSearch() {
+  if (!query.value.trim()) return
+  router.push({
+    name:  route.name,
+    query: { city: query.value.trim() }
+  })
+  query.value = ''
+}
+
+// 2) Navigate to a saved location
+function goToCity(city) {
+  router.push({ name: route.name, query: { city } })
+}
+
+// 3) Remove by index
+function remove(index) {
+  saved.value.splice(index, 1)
+  localStorage.setItem('saved', JSON.stringify(saved.value))
+}
+
+// 4) (elsewhere, in weatherHome.vue) after you write localStorage:
+//    window.dispatchEvent(new Event('saved-updated'))
+</script>
   
   <style scoped>
   .search-container {

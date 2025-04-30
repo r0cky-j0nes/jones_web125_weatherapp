@@ -78,8 +78,14 @@ onMounted(async () => {
 
 <style scoped>
 .chart-container {
-  width: 90%; max-width: 700px; height: 400px;
-  margin: 2rem auto; text-align: center;
+  width: 100%;
+  max-width: 1200px; 
+  padding: 80px; 
+  height: 400px;
+  justify-content: center;
+  margin: 20px; 
+  text-align: center;
+  background-color: rgb(255, 255, 255);
 }
 .err { color: red; margin-bottom:1rem; }
 </style>
