@@ -27,19 +27,19 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
-// reactive state
+//reactive state
 const query   = ref('')
 const saved   = ref(JSON.parse(localStorage.getItem('saved') || '[]'))
 
 const router  = useRouter()
 const route   = useRoute()
 
-// reload helper
+//reload helper
 function loadSaved() {
   saved.value = JSON.parse(localStorage.getItem('saved') || '[]')
 }
 
-// listen for our custom event
+//listen for our saved events
 onMounted(() => {
   window.addEventListener('saved-updated', loadSaved)
 })
@@ -47,7 +47,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('saved-updated', loadSaved)
 })
 
-// 1) Search on Enter
+//Search on Enter
 function onSearch() {
   if (!query.value.trim()) return
   router.push({
@@ -57,19 +57,17 @@ function onSearch() {
   query.value = ''
 }
 
-// 2) Navigate to a saved location
+//Navigate to a saved location
 function goToCity(city) {
   router.push({ name: route.name, query: { city } })
 }
 
-// 3) Remove by index
+//Remove by index
 function remove(index) {
   saved.value.splice(index, 1)
   localStorage.setItem('saved', JSON.stringify(saved.value))
 }
 
-// 4) (elsewhere, in weatherHome.vue) after you write localStorage:
-//    window.dispatchEvent(new Event('saved-updated'))
 </script>
   
   <style scoped>

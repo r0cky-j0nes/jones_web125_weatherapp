@@ -11,29 +11,33 @@
           v-if="day.icon"
           :src="`https://openweathermap.org/img/wn/${day.icon}@2x.png`"
           :alt="day.main"
-          class="card-icon"
-        />
-
-        <div class="card-date">
+          class="card-icon"/>
+          
+          <div class="card-date">
           {{ new Date(day.date).toLocaleDateString('en-US', {
             weekday: 'short',
             month:   'short',
             day:     'numeric'
           }) }}
         </div>
+        <!--Condition -->
         <div class="card-cond">{{ day.main }}</div>
+        <!--Temp -->
         <div class="card-temps">
           <span>High: {{ Math.round(day.max) }}°F</span>
           <span>Low:  {{ Math.round(day.min) }}°F</span>
         </div>
+
       </div>
     </div>
 
     <p v-else>Loading 5-day forecast…</p>
+
   </div>
 </template>
 
 <script setup>
+
 import { ref, onMounted, watch } from 'vue'
 import { useRoute }              from 'vue-router'
 
@@ -51,7 +55,6 @@ async function fetchForecast() {
   }
 
   try {
-    // 🔥 Fix: single template literal for the full URL
     const url = `https://api.openweathermap.org/data/2.5/forecast` +
                 `?q=${encodeURIComponent(city.value)}` +
                 `&units=imperial&appid=${API_KEY}`
@@ -63,7 +66,7 @@ async function fetchForecast() {
       throw new Error(data.message || 'Invalid forecast data.')
     }
 
-    // 2) Group entries by date
+    //Group entries by date
     const grouped = data.list.reduce((acc, item) => {
       const dateKey = item.dt_txt.split(' ')[0]
       if (!acc[dateKey]) {
@@ -82,7 +85,7 @@ async function fetchForecast() {
       return acc
     }, {})
 
-    // 3) Build array, pick most frequent condition and its icon
+    //Build array, pick most frequent condition and its icon
     const arr = Object.entries(grouped).map(([dateKey, day]) => {
       const main = Object.keys(day.condCount)
         .reduce((a, b) => day.condCount[a] > day.condCount[b] ? a : b)
@@ -102,7 +105,7 @@ async function fetchForecast() {
       }
     })
 
-    // 4) Sort & take first 5
+    //Sort & take first 5
     arr.sort((a, b) => a.date - b.date)
     dailyData.value = arr.slice(0, 5)
 
@@ -112,10 +115,10 @@ async function fetchForecast() {
   }
 }
 
-// Initial fetch on mount
+//initial fetch on mount
 onMounted(fetchForecast)
 
-// Re-fetch whenever ?city changes
+//Refetch whenever ?city changes
 watch(
   () => route.query.city,
   newCity => {
@@ -142,7 +145,7 @@ watch(
   margin-bottom: 1rem;
 }
 
-/* Cards wrapper */
+/* Card bg */
 .cards {
   display: flex;
   flex-wrap: wrap;
@@ -151,7 +154,7 @@ watch(
   margin-top: 1.5rem;
 }
 
-/* Individual day card */
+/* 5 day card */
 .day-card {
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(5px);
@@ -163,14 +166,14 @@ watch(
   font-family: "Delius Unicase", cursive;
 }
 
-/* Date at top */
+/* Date */
 .card-date {
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
   font-weight: bold;
 }
 
-/* Weather condition */
+/*condition */
 .card-cond {
   font-size: 1rem;
   font-style: italic;

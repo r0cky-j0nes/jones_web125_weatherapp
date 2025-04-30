@@ -1,10 +1,5 @@
 <template>
   <div id="app">
-       <!-- Always visible search & saved list -->
-      
-
-      <!-- Below that, whichever view is active -->
-      
       
     <SearchBar />
     <router-view/>

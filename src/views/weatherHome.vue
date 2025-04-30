@@ -34,8 +34,7 @@
             <div class="weather-icon">
               <img
                 :src="`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`"
-                :alt="weather.weather[0].description"
-              />
+                :alt="weather.weather[0].description"/>
             </div>
             <div class="weather">{{ weather.weather[0].main }}</div>
           </div>
@@ -45,18 +44,17 @@
             <button @click="mode = '5day'">Show 5-Day</button>
             <button @click="mode = ''">Hide Forecast</button>
           </div>
+
         </div>
 
         <HourlyForecast
           v-if="mode === 'hourly'"
           :city="city"
-          class="forecast-panel"
-        />
+          class="forecast-panel"/>
         <FiveDayForecast
           v-if="mode === '5day'"
           :city="city"
-          class="forecast-panel"
-        />
+          class="forecast-panel"/>
       </div>
 
       <!-- Error or loading states -->
@@ -82,11 +80,11 @@ const error   = ref('')
 const mode    = ref('')
 const currentTime = computed(() => {
   if (!weather.value.timezone) return ''
-  // right now:
+  //right now:
   const nowUtc = Date.now()
-  // shift by city timezone
+  //shift by city timezone
   const cityMs = nowUtc + weather.value.timezone * 1000
-  // create hours/minutes
+  //create hours/minutes
   const d = new Date(cityMs)
   const hrs = d.getUTCHours()
   const mins = d.getUTCMinutes()
@@ -96,7 +94,7 @@ const currentTime = computed(() => {
   return `${h12}:${m2} ${suffix}`
 })
 
-// Build date 
+//Build date 
 function dateBuilder() {
   const d = new Date()
   return d.toLocaleDateString('en-US', {
@@ -107,17 +105,17 @@ function dateBuilder() {
   })
 }
 
-// Pick background based on temperature
+//Pick background based on temperature
 function bgClass() {
   if (!weather.value.main) return ''
   const t = weather.value.main.temp
   return t < 50 ? 'cold' : t > 80 ? 'hot' : 'mild'
 }
 
-// Fetch by city name, including state+country via Direct Geocoding
+//Fetch by city state, and country via Direct Geocoding
 async function fetchByCity(name) {
   try {
-    // Geocode to get coords + state/country
+    //Geocode to get coords + state/country
     const geoRes = await fetch(
       `https://api.openweathermap.org/geo/1.0/direct` +
       `?q=${encodeURIComponent(name)}` +
@@ -136,7 +134,7 @@ async function fetchByCity(name) {
   }
 }
 
-//Fetch by coordinates + optional reverse-geocode info
+//Fetch by coordinates
 //Accept extra params geoName, state, country for Direct Geocode case, or perform reverse geocode if not provided.
 async function fetchByCoords(latitude, longitude, geoName = '', geoState = '', geoCountry = '') {
   try {
@@ -189,23 +187,23 @@ async function fetchByCoords(latitude, longitude, geoName = '', geoState = '', g
   }
 }
 
-//On mount: decide which fetch to run
+//On mount decide which fetch to run
 onMounted(() => {
   if (city.value) {
-    // If URL has ?city=
+    //If URL has ?city=
     fetchByCity(city.value)
   } else if (navigator.geolocation) {
-    // Else try browser geolocation
+    //Else try browser geolocation
     navigator.geolocation.getCurrentPosition(
       pos => fetchByCoords(pos.coords.latitude, pos.coords.longitude),
       () => {
-        // Denied or failed: leave prompt in place
+        //Denied or failed leave prompt in place
       }
     )
   }
 })
 
-// 4) React if user navigates to a new ?city=
+//React if user navigates to a new ?city=
 watch(
   () => route.query.city,
   newCity => {
@@ -216,16 +214,16 @@ watch(
   }
 )
 
-// 5) Save button handler
+//Save button handler
 function saveLocation() {
   console.log('[saveLocation] clicked, city =', city.value)
   const list = JSON.parse(localStorage.getItem('saved')||'[]')
   if (city.value && !list.includes(city.value)) {
     list.push(city.value)
     localStorage.setItem('saved', JSON.stringify(list))
-     // tell everyone the saved list just changed
+     //tell everyone the saved list just changed
       window.dispatchEvent(new Event('saved-updated'))
-    // notify the SearchBar to reload
+    //notify the SearchBar to reload
     window.dispatchEvent(new Event('saved-updated'))
     console.log('[saveLocation] new list =', list)
   } else {
@@ -235,7 +233,6 @@ function saveLocation() {
 </script>
 
 <style scoped>
-
 main {
   min-height: 100vh;
   padding: 1rem;
@@ -249,14 +246,13 @@ main {
   color: #c00;
   margin-top: 1rem;
 }
-/* Card container */
+
 .weather-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* The semi-transparent card */
 .weather-card {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
